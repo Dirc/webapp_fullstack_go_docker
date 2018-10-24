@@ -19,8 +19,8 @@ wget localhost:8080/assets/
 # GoLang Docker image
 
 ```bash
-docker build -t my-golang-app .
-docker run -it --rm -p 8080:8080 --name my-running-app my-golang-app
+docker build -t gowebapp .
+docker run -it --rm -p 8080:8080 --name my-running-app gowebapp
 ```
 
 # Postgres Docker image
@@ -59,6 +59,12 @@ INSERT INTO birds (species, description) VALUES ('kanarie', 'Small yellow brid')
 select * from birds;
 select species, description from birds;
 
+```
+
+# Docker-compose
+
+```bash
+docker-compose -f docker-compose.yml up
 ```
 
 
