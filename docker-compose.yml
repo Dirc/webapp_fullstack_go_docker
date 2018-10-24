@@ -7,7 +7,11 @@ services:
     image: postgres
     restart: always
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: example
+      POSTGRES_DB: bird_encyclopedia
+    volumes:
+      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
 
   web:
     build: .

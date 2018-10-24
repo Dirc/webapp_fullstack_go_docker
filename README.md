@@ -67,6 +67,12 @@ select species, description from birds;
 docker-compose -f docker-compose.yml up
 ```
 
+You can verify if the database is initialized using psql:
+
+```bash
+docker exec -it webappfullstackgodocker_db_1 psql -d bird_encyclopedia -U postgres -c "select * from birds;"
+```
+
 
 # Reference
 - https://www.sohamkamani.com/blog/2017/09/13/how-to-build-a-web-application-in-golang/
