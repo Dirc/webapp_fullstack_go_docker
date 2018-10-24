@@ -16,6 +16,13 @@ wget localhost:8080/hello
 wget localhost:8080/assets/
 ```
 
+# GoLang Docker image
+
+```bash
+docker build -t my-golang-app .
+docker run -it --rm -p 8080:8080 --name my-running-app my-golang-app
+```
+
 # Postgres Docker image
 
 ## Setup
@@ -38,7 +45,7 @@ CREATE DATABASE bird_encyclopedia;
 -- Create table
 CREATE TABLE birds (
   id SERIAL PRIMARY KEY,
-  bird VARCHAR(256),
+  species VARCHAR(256),
   description VARCHAR(1024)
 );
 
@@ -48,13 +55,14 @@ CREATE TABLE birds (
 select * from birds;
 
 -- Insert a value
-INSERT INTO birds (bird, description) VALUES ('kanarie', 'Small yellow brid');
+INSERT INTO birds (species, description) VALUES ('kanarie', 'Small yellow brid');
 select * from birds;
-select bird, description from birds;
+select species, description from birds;
 
 ```
 
 
 # Reference
 - https://www.sohamkamani.com/blog/2017/09/13/how-to-build-a-web-application-in-golang/
+- https://hub.docker.com/_/golang/
 - https://hub.docker.com/_/postgres/
