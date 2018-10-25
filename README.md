@@ -1,11 +1,13 @@
-# Web app example
+# GoLang Webapp
+
+Based on this great [blog of Soham Kamani](https://www.sohamkamani.com/blog/2017/09/13/how-to-build-a-web-application-in-golang/).
 
 ```bash
-# Run web app
-go run main.go bird_handlers.go
-
 # Run unit tests
 go test -v
+
+# Run web app
+go run main.go bird_handlers.go
 ```
 
 Browse to
@@ -16,16 +18,20 @@ wget localhost:8080/hello
 wget localhost:8080/assets/
 ```
 
-# GoLang Docker image
+## GoLang Docker image
 
 ```bash
 docker build -t gowebapp .
-docker run -it --rm -p 8080:8080 --name my-running-app gowebapp
+docker run -it --rm -p 8080:8080 --name my-running-gowebapp gowebapp
 ```
 
-# Postgres Docker image
+When you develop new code, you will need to remove the image in order to get it rebuild. (COPY in the Dockerfile does not detect changes?)
 
-## Setup
+```bash
+docker image rm gowebapp
+```
+
+## Postgres Docker image
 
 ```bash
 docker pull postgres
@@ -35,6 +41,8 @@ docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgre
 docker run -it --rm --link some-postgres:postgres postgres psql -h postgres -U postgres
 #> password: mysecretpassword
 ```
+
+Play around with SQL.
 
 ```sql
 -- Create the database
@@ -58,10 +66,9 @@ select * from birds;
 INSERT INTO birds (species, description) VALUES ('kanarie', 'Small yellow brid');
 select * from birds;
 select species, description from birds;
-
 ```
 
-# Docker-compose
+## Docker-compose
 
 ```bash
 docker-compose -f docker-compose.yml up
@@ -73,8 +80,14 @@ You can verify if the database is initialized using psql:
 docker exec -it webappfullstackgodocker_db_1 psql -d bird_encyclopedia -U postgres -c "select * from birds;"
 ```
 
+Cleaning things. Assuming these are the last containers you have started (otherwise use labels):
 
-# Reference
-- https://www.sohamkamani.com/blog/2017/09/13/how-to-build-a-web-application-in-golang/
-- https://hub.docker.com/_/golang/
-- https://hub.docker.com/_/postgres/
+```bash
+docker rm $(docker ps -qn 2)
+```
+
+## Reference
+
+- [Blog Soham Kamani](https://www.sohamkamani.com/blog/2017/09/13/how-to-build-a-web-application-in-golang/)
+- [Use GoLang image](https://hub.docker.com/_/golang/)
+- [Use Postgres image](https://hub.docker.com/_/postgres/)

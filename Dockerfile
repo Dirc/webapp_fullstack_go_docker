@@ -8,4 +8,4 @@ RUN go install -v ./...
 
 EXPOSE 8080
 
-CMD ["go", "run", "main.go", "bird_handlers.go"]
+CMD ["go", "run", "main.go", "bird_handlers.go", "store.go"]
