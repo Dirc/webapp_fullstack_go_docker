@@ -86,6 +86,12 @@ Cleaning things. Assuming these are the last containers you have started (otherw
 docker rm $(docker ps -qn 2)
 ```
 
+## Connect Go webapp to Postgres container
+
+```go
+connString := "host=db user=postgres password=secret dbname=bird_encyclopedia sslmode=disable"
+```
+
 ## Reference
 
 - [Blog Soham Kamani](https://www.sohamkamani.com/blog/2017/09/13/how-to-build-a-web-application-in-golang/)
