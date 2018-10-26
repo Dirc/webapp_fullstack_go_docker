@@ -80,10 +80,10 @@ You can verify if the database is initialized using psql:
 docker exec -it webappfullstackgodocker_db_1 psql -d bird_encyclopedia -U postgres -c "select * from birds;"
 ```
 
-Cleaning things. Assuming these are the last containers you have started (otherwise use labels):
+Cleaning things:
 
 ```bash
-docker rm $(docker ps -qn 2)
+docker-compose -f docker-compose.yml rm --force
 ```
 
 ## Connect Go webapp to Postgres container
