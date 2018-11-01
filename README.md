@@ -7,7 +7,7 @@ Based on this great [blog of Soham Kamani](https://www.sohamkamani.com/blog/2017
 go test -v
 
 # Run web app
-go run main.go bird_handlers.go
+go run main.go bird_handlers.go store.go
 ```
 
 Browse to
@@ -97,3 +97,8 @@ connString := "host=db user=postgres password=secret dbname=bird_encyclopedia ss
 - [Blog Soham Kamani](https://www.sohamkamani.com/blog/2017/09/13/how-to-build-a-web-application-in-golang/)
 - [Use GoLang image](https://hub.docker.com/_/golang/)
 - [Use Postgres image](https://hub.docker.com/_/postgres/)
+
+
+## ToDo
+- [ ] Add unit test for store
+- [ ] Add CI flow, Travis CI or Cirlce CI?
