@@ -112,7 +112,7 @@ select species, description from birds;
 select * from birds;
 ```
 
-In other words, we can manage the database the way we need it except for one last thing. We want the database to initalise on startup. This can be achieved by adding the sql to initialise the database in a initdb.sql file and put it in `/docker-entrypoint-initdb.d` in the container.
+In other words, we can manage the database the way we need it, except for one last thing. We want the database to initalise on startup. This can be achieved by adding a initdb.sql file and put it in `/docker-entrypoint-initdb.d` in the container.
 
 ```bash
 docker run --rm --name db -v `pwd`:/docker-entrypoint-initdb.d -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=bird_encyclopedia -d postgres
