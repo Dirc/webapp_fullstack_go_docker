@@ -112,18 +112,36 @@ select species, description from birds;
 select * from birds;
 ```
 
-In other words, we can manage the database the way we need it, except for one last thing. We want the database to initalise on startup. This can be achieved by adding a initdb.sql file and put it in `/docker-entrypoint-initdb.d` in the container.
+In other words, we can manage the database the way we need it, except for one last thing. We want the database to initalise on startup. This can be achieved by adding a initdb.sql file and put it in `/docker-entrypoint-initdb.d` in the container. A simple way to do this is to add all files of the current directory using \`pwd\`.
 
 ```bash
 docker run --rm --name db -v `pwd`:/docker-entrypoint-initdb.d -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=bird_encyclopedia -d postgres
 ```
 
-We can verify the result again using psql
+We can verify the result again with psql.
 
 ```bash
 # Connect using psql
 docker run -it --rm --link db:postgres postgres psql -h postgres -U postgres bird_encyclopedia
 #> password: secret
+```
+
+## Docker Compose
+
+```bash
+docker-compose up
+```
+
+You can verify if the database is initialized using psql:
+
+```bash
+docker exec -it webappfullstackgodocker_db_1 psql -d bird_encyclopedia -U postgres -c "select * from birds;"
+```
+
+Cleaning things:
+
+```bash
+docker-compose -f docker-compose.yml rm --force
 ```
 
 ## skeleton
@@ -145,8 +163,10 @@ docker run -it --rm --link db:postgres postgres psql -h postgres -U postgres bir
 
 
 ## ToDo
-- [ ] Intro more to the point. It is about Docker, not Go.
+- [x] Intro more to the point. It is about Docker, not Go.
 - [ ] Fix all LINKS
+- [ ] Verify if all code is working with current blog commit.
+
 
 ## Old snippets
 
