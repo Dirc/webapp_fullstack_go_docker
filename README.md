@@ -18,6 +18,15 @@ wget localhost:8080/hello
 wget localhost:8080/assets/
 ```
 
+## Dependecies
+
+Use `dep` to manage dependencies.
+
+```bash
+# Install all dependencies
+dep ensure
+```
+
 ## GoLang Docker image
 
 ```bash
@@ -71,7 +80,7 @@ select species, description from birds;
 ## Docker-compose
 
 ```bash
-docker-compose -f docker-compose.yml up
+docker-compose up
 ```
 
 You can verify if the database is initialized using psql:
@@ -98,7 +107,7 @@ connString := "host=db user=postgres password=secret dbname=bird_encyclopedia ss
 - [Use GoLang image](https://hub.docker.com/_/golang/)
 - [Use Postgres image](https://hub.docker.com/_/postgres/)
 
-
 ## ToDo
+
 - [ ] Add unit test for store
 - [ ] Add CI flow, Travis CI or Cirlce CI?

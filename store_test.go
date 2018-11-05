@@ -14,8 +14,8 @@ type StoreSuite struct {
 }
 
 func (s *StoreSuite) SetupSuite() {
-	//connString := "dbname=db sslmode=disable"
-	connString := "host=db user=postgres password=secret dbname=bird_encyclopedia sslmode=disable"
+	connString := "dbname=temp sslmode=disable"
+	//connString := "host=db user=postgres password=secret dbname=bird_encyclopedia sslmode=disable"
 	db, err := sql.Open("postgres", connString)
 	if err != nil {
 		s.T().Fatal(err)

@@ -12,7 +12,7 @@ import (
 
 func TestGetBirdsHandler(t *testing.T) {
 	// Initialize the mock store
-	mockStore := InitMockStore()
+	mockStore := InitMockstore()
 
 	/* Define the data that we want to return when the mocks `GetBirds` method is
 	called
@@ -60,7 +60,7 @@ func TestGetBirdsHandler(t *testing.T) {
 
 func TestCreateBirdsHandler(t *testing.T) {
 
-	mockStore := InitMockStore()
+	mockStore := InitMockstore()
 	/*
 	 Similarly, we define our expectations for th `CreateBird` method.
 	 We expect the first argument to the method to be the bird struct

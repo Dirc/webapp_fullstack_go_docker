@@ -1,0 +1,27 @@
+# Use postgres/example user/password credentials
+version: '3.4'
+
+x-postgres-env: &postgres-env
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: secret
+  POSTGRES_DB: bird_encyclopedia
+
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    environment: *postgres-env
+    volumes:
+      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+
+  web:
+    image: gowebapp_test
+    restart: always
+    ports:
+      - 8080:8080
+    environment: *postgres-env
+    depends_on:
+      - db
+    command: ["./wait-for-postgres.sh", "db:5432", "app"]

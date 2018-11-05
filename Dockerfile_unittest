@@ -1,0 +1,45 @@
+FROM golang:1.11
+
+#
+# My guess...
+#
+#RUN apt update && \
+#    apt install -y \
+#      postgresql
+#USER postgres 
+#RUN DBNAME=bird_encyclopedia /usr/lib/postgresql/9.6/bin/postgres \ 
+#      -D /var/lib/postgresql/9.6/main \
+#      -c config_file=/etc/postgresql/9.6/main/postgresql.conf
+
+
+#
+# Ref: https://docs.docker.com/engine/examples/postgresql_service/#install-postgresql-on-docker
+#
+RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+RUN apt-get update && apt-get install -y python-software-properties software-properties-common postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3
+USER postgres
+
+# Create a PostgreSQL role named ``docker`` with ``docker`` as the password and
+# then create a database `docker` owned by the ``docker`` role.
+# Note: here we use ``&&\`` to run commands one after the other - the ``\``
+#       allows the RUN command to span multiple lines.
+RUN    /etc/init.d/postgresql start &&\
+    psql --command "CREATE USER postgres WITH SUPERUSER PASSWORD 'secret';" &&\
+    createdb -O bird_encyclopedia postgres
+RUN echo "listen_addresses='*'" >> /etc/postgresql/9.6/main/postgresql.conf
+EXPOSE 5432
+
+RUN DBNAME=bird_encyclopedia /usr/lib/postgresql/9.6/bin/postgres \ 
+      -D /var/lib/postgresql/9.6/main \
+      -c config_file=/etc/postgresql/9.6/main/postgresql.conf
+
+
+
+
+
+WORKDIR /go/src/app
+COPY . .
+
+RUN go get -d -v ./...
+
