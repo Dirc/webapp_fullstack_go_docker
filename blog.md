@@ -128,6 +128,37 @@ docker run -it --rm --link db:postgres postgres psql -h postgres -U postgres bir
 
 ## Docker Compose
 
+Now that we have both the Go container and the Postgres container running, we can tie them together with Docker Compose.
+
+We take our previous `docker run` commands and put them in the yaml syntax of Docker Compose.
+
+```yaml
+version: '3.1'
+services:
+  web:
+    build: .
+    image: gowebapp
+    restart: always
+    ports:
+      - 8080:8080
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: bird_encyclopedia
+    volumes:
+      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+```
+
+Remarks:
+
+- [ ] Postgress env variables.
+- [ ] build gowebapp image from Dockerfile
+
+We can now start both services.
+
 ```bash
 docker-compose up
 ```

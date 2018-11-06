@@ -1,8 +1,11 @@
-# Use postgres/example user/password credentials
 version: '3.1'
-
 services:
-
+  web:
+    build: .
+    image: gowebapp
+    restart: always
+    ports:
+      - 8080:8080
   db:
     image: postgres
     restart: always
@@ -13,9 +16,3 @@ services:
     volumes:
       - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
 
-  web:
-    build: .
-    image: gowebapp
-    restart: always
-    ports:
-      - 8080:8080
