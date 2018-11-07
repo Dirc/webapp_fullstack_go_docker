@@ -58,28 +58,28 @@ We can now try to build the image and run it.
 
 ```bash
 docker build -t gowebapp .
-docker run -it --rm -p 8080:8080 --name my-running-gowebapp gowebapp
+docker run -it --rm -p 8080:8080 --name web gowebapp
 ```
 
-Verify the webapp by browse to one of the uri's
+Verify the webapp by browse to one of the uri's.
 
-# Get database running in a Postgres container
+## Get database running in a Postgres container
 
 We start again with [the official Postgres image](https://hub.docker.com/_/postgres/).
 
 We can start a Postgres container.
 
 ```bash
-# Start postgress container
-docker run --rm --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+# Start Postgres container
+docker run --rm --name db -e POSTGRES_PASSWORD=secret -d postgres
 ```
 
 After it is started, we can and connect to it with psql and play around with SQL.
 
 ```bash
 # Connect using psql
-docker run -it --rm --link some-postgres:postgres postgres psql -h postgres -U postgres
-#> password: mysecretpassword
+docker run -it --rm --link db:postgres postgres psql -h postgres -U postgres
+#> password: secret
 ```
 
 We can initialise the database.
@@ -112,7 +112,7 @@ select species, description from birds;
 select * from birds;
 ```
 
-In other words, we can manage the database the way we need it, except for one last thing. We want the database to initalise on startup. This can be achieved by adding a initdb.sql file and put it in `/docker-entrypoint-initdb.d` in the container. A simple way to do this is to add all files of the current directory using \`pwd\`.
+In other words, we can manage the database the way we need it, except for one last thing. We want the database to initalise with the needed table during startup. We can achieve this in two steps. First we add an environment variable `POSTGRES_DB` where we can specify the database name we want to create. Second we create an initdb.sql file which creates the table we need and we put this file in `/docker-entrypoint-initdb.d` in the container. A simple way to do this is to add all files of the current directory using \`pwd\`.
 
 ```bash
 docker run --rm --name db -v `pwd`:/docker-entrypoint-initdb.d -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=bird_encyclopedia -d postgres
@@ -128,9 +128,9 @@ docker run -it --rm --link db:postgres postgres psql -h postgres -U postgres bir
 
 ## Docker Compose
 
-Now that we have both the Go container and the Postgres container running, we can tie them together with Docker Compose.
+Now that we have both a standalone Go container and Postgres container running, we can tie them together with Docker Compose.
 
-We take our previous `docker run` commands and put them in the yaml syntax of Docker Compose.
+We take our previous `docker run` commands and put them in a `docker-compose.yml` file. For the `web` service we add `build: .`, so when Docker can not find an image called `gowebapp` locally, it will build the Dockerfile instead of searching the image on Docker Hub. For the `db` service do want Docker to search on Docker Hub, since we use the vanilla Postgres image.
 
 ```yaml
 version: '3.1'
@@ -138,12 +138,10 @@ services:
   web:
     build: .
     image: gowebapp
-    restart: always
     ports:
       - 8080:8080
   db:
     image: postgres
-    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: secret
@@ -151,11 +149,6 @@ services:
     volumes:
       - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
 ```
-
-Remarks:
-
-- [ ] Postgress env variables.
-- [ ] build gowebapp image from Dockerfile
 
 We can now start both services.
 
@@ -167,12 +160,6 @@ You can verify if the database is initialized using psql:
 
 ```bash
 docker exec -it webappfullstackgodocker_db_1 psql -d bird_encyclopedia -U postgres -c "select * from birds;"
-```
-
-Cleaning things:
-
-```bash
-docker-compose -f docker-compose.yml rm --force
 ```
 
 ## skeleton
@@ -192,12 +179,15 @@ docker-compose -f docker-compose.yml rm --force
   - Connect both using Docker Compose
   - Ensure webapp is using the Postgres container as database.
 
-
 ## ToDo
+
 - [x] Intro more to the point. It is about Docker, not Go.
 - [ ] Fix all LINKS
-- [ ] Verify if all code is working with current blog commit.
-
+- [ ] Verify if all code is working with current blog commit
+- [ ] Notify Soham Kamani of how he inspired me
+- [ ] Capital caracters for Docker and Postgres
+- [ ] Spelling checker!
+- [ ] update docker-compose.yml and verify if it still works!
 
 ## Old snippets
 
@@ -206,4 +196,3 @@ docker-compose -f docker-compose.yml rm --force
 I finaly had some evenings to spend some time on learning GoLang. After the Go tutorial [Games with Go](link), I wanted to learn to ceate a simple webapp. I found this excelent [blog of Soham Kamani](https://www.sohamkamani.com/blog/2017/09/13/how-to-build-a-web-application-in-golang/) where he creates a simple webapp in Go including a database and with proper unit tests. This got me exited and after following his tutorial, I decided to improve this fullstack webapp setup by dockerizing it. It turned out to be quite easy and I will show you how we can achieve this.
 
 For my daily work I'm used to work with the Jetbains IDE's. But since they do not have a community version for Go development I tried VS Code which has a nice Go plugin.
-
