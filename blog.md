@@ -162,6 +162,14 @@ You can verify if the database is initialized using psql:
 docker exec -it webappfullstackgodocker_db_1 psql -d bird_encyclopedia -U postgres -c "select * from birds;"
 ```
 
+## Modify database connection in Go app
+
+So we can start both containers together using Docker Compose. To only thing left to do is to tell the Go webapp where to find the database. For this we need to modify the database connection which is defined in `main.go` in the `main()` function. The database connection is defained by these keys `host= port= user= password= dbname= sslmode=disable`. Since we use Docker Compose the `host` is equal to the service name `db`, hence we get:
+
+```go
+connString := "host=db port=5432 user=postgres password=secret dbname=bird_encyclopedia sslmode=disable"
+```
+
 ## skeleton
 
 - Intro: Ready to learn some Go Lang

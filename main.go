@@ -32,7 +32,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	//connString := "host= port= user= password= dbname= sslmode=disable"
-
 	connString := "host=db user=postgres password=secret dbname=bird_encyclopedia sslmode=disable"
 	db, err := sql.Open("postgres", connString)
 	if err != nil {

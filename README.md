@@ -109,5 +109,5 @@ connString := "host=db user=postgres password=secret dbname=bird_encyclopedia ss
 
 ## ToDo
 
-- [ ] Add unit test for store
+- [x] Add unit test for store
 - [ ] Add CI flow, Travis CI or Cirlce CI?
