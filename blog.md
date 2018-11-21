@@ -200,6 +200,7 @@ We can start the stack again and browse to `http://localhost:8080/assets/`, add 
 - [ ] Capital caracters for Docker and Postgres
 - [ ] Spelling checker!
 - [ ] update docker-compose.yml and verify if it still works!
+- [ ] add remark an VS Code IDE
 
 ## Old snippets
 
