@@ -1,20 +1,18 @@
-# Idea for blog
+# Dockerize fullstack Go webapp
 
-## Dockerize Fullstack Go webapp
-
-While I was following a nice tutorial on creating a webapp in Go, I decided to improve this setup by dockerizing it. It turned out to be quite easy and I will show you how you can do this.
+While I was following a nice tutorial on creating a webapp in Go, I decided to improve this setup by dockerizing it. This turned out to be quite easy, which made me excited to write a blog about it.
 
 ## What to do
 
 What are we going to do? The blog is about dockerizing a simple Go webapp. This webapp exist of some Go code and a Postgres database. We can brake the task down into four parts:
 
-- Get Go code runnning in a Go container
+- Get Go code running in a Go container
 - Get database running in a Postgres container
 - Manage both using Docker Compose
 - Ensure webapp is using the Postgres container as database.
 
-## Go Web App
-Before we proceed we need a little more knowledge of this [webapp](LINK) we are working with.
+## Go webapp
+Before we proceed we need a little more knowledge of this [webapp](https://github.com/Dirc/webapp_fullstack_go_docker) we are working with.
 
 We can start the webapp.
 
@@ -23,7 +21,7 @@ We can start the webapp.
 go run main.go bird_handlers.go store.go
 ```
 
-We can verify if it is working on some url's.
+We can verify if it is working on some URLs.
 
 ```bash
 wget localhost:8080
@@ -33,9 +31,9 @@ wget localhost:8080/assets/
 
 There is a database called `bird_encyclopedia` with a table `birds` which has two columns `species` and `description`.
 
-More details of this webapp can be found in this great [tutorial of Soham Kamani](https://www.sohamkamani.com/blog/2017/09/13/how-to-build-a-web-application-in-golang/).
+More details of this webapp can be found in [this great tutorial of Soham Kamani](https://www.sohamkamani.com/blog/2017/09/13/how-to-build-a-web-application-in-golang/).
 
-## Get GO code runnning in a Go container
+## Get Go code running in a Go container
 
 To get the webapp running in a container, we will use the [official GoLang image](https://hub.docker.com/_/golang/). Since we have a simple webapp, we do not need to add much to the example `Dockerfile`. We only add a more recent version of the golang image and expose a port.
 
@@ -53,7 +51,7 @@ EXPOSE 8080
 CMD ["app"]
 ```
 
-The `go get -d` command downloads all dependencies of the webapp and `go install` instals the webapp. After installing the webapp it becomes available as an executable `app`, i.e. the workdir directory.
+The `go get -d` command downloads all dependencies of the webapp and `go install` installs the webapp. After installing the webapp it becomes available as an executable `app`, i.e. the `WORKDIR` directory.
 
 We can now try to build the image and run it.
 
@@ -62,11 +60,11 @@ docker build -t gowebapp .
 docker run -it --rm -p 8080:8080 --name web gowebapp
 ```
 
-Verify the webapp by browse to one of the uri's.
+Verify the webapp by browse to one of the URLs.
 
 ## Get database running in a Postgres container
 
-For our Postgress database, we take the [the official Postgres image](https://hub.docker.com/_/postgres/).
+For our Postgres database, we take the [the official Postgres image](https://hub.docker.com/_/postgres/).
 
 We can start a Postgres container and add a password and default database.
 
@@ -83,7 +81,7 @@ docker run -it --rm --link db:postgres postgres psql -h postgres -U postgres
 #> password: secret
 ```
 
-We can initialise the database.
+We can initialize the database.
 
 ```sql
 -- Create table
@@ -98,7 +96,7 @@ And we can insert a value and retreive information.
 
 ```sql
 -- Insert a value
-INSERT INTO birds (species, description) VALUES ('kanarie', 'Small yellow brid');
+INSERT INTO birds (species, description) VALUES ('Canary', 'Small yellow bird');
 select * from birds;
 select species, description from birds;
 
@@ -108,7 +106,7 @@ select species, description from birds;
 select * from birds;
 ```
 
-In other words, we can manage the database the way we need it. Except for one last thing. We want the database to initalise with the `birds` table during startup. We can achieve this by creating an initdb.sql file which creates this table and put this file in the `/docker-entrypoint-initdb.d` directory in the container. A clumsy but simple way to do this is to add all files of the current directory using \`pwd\`.
+In other words, we can manage the database the way we need it. Except for one last thing. We want the database to initalize with the `birds` table during startup. We can achieve this by creating an `initdb.sql` file which creates this table and put this file in the `/docker-entrypoint-initdb.d` directory in the container. A clumsy but simple way to do this is to add all files of the current directory using \`pwd\`.
 
 ```bash
 docker run --rm --name db -v `pwd`:/docker-entrypoint-initdb.d -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=bird_encyclopedia -d postgres
@@ -160,19 +158,19 @@ docker exec -it webappfullstackgodocker_db_1 psql -d bird_encyclopedia -U postgr
 
 ## Modify database connection in Go app
 
-Now that we can start both containers together using Docker Compose. To only thing left is to tell the Go webapp where to find the database. For this we need to modify the database connection which is configured in the `main` function in the `main.go` file. The database connection is defiened by the keys `host= port= user= password= dbname= sslmode=`. Since we use Docker Compose, the host is equal to the service name `host=db`. Hence we get:
+Now that we can start both containers together using Docker Compose. To only thing left is to tell the Go webapp where to find the database. For this we need to modify the database connection which is configured in the `main` function in the `main.go` file. The database connection is defined by the keys `host= port= user= password= dbname= sslmode=`. Since we use Docker Compose, the host is equal to the service name `host=db`. Hence we get:
 
 ```go
 connString := "host=db port=5432 user=postgres password=secret dbname=bird_encyclopedia sslmode=disable"
 ```
 
-We can start the stack again and browse to `http://localhost:8080/assets/`, add some of your favorite birds in the gui and then verify the `birds` table in the database again with psql.
+## Ready to Go!
 
-## Done!
+Now that everything is set up. We can start the stack again with `docker-compose up`. Browse to the gui at `http://localhost:8080/assets/` and add some of your favorite birds. Verify if your new birds are really stored in the database by running the psql command again.
 
-We are done! 
+## Drafts
 
-## skeleton
+### skeleton
 
 - Intro: Ready to learn some Go Lang
   - (After Games With Go)
@@ -189,32 +187,32 @@ We are done!
   - Connect both using Docker Compose
   - Ensure webapp is using the Postgres container as database.
 
-## ToDo
+### ToDo
 
 - [x] Intro more to the point. It is about Docker, not Go.
-- [ ] Fix all LINK, LINKS
+- [x] Fix all LINK, LINKS
 - [ ] Verify if all code is working with current blog commit
 - [x] Capital caracters for Docker and Postgres,
 - [x] search for Postgress (double ss), Dockerize
-- [ ] Spelling checker!
+- [x] Spelling checker!
 - [ ] update docker-compose.yml and verify if it still works!
-- [ ] Rewrite first paragraph/intro
+- [x] Rewrite first paragraph/intro
+- [x] Write conclusion
 - [ ] Notify Soham Kamani of how he inspired me
 
-## Old snippets
+### Old snippets
 
-### Intro
+#### Intro
 
 I finaly had some evenings to spend some time on learning GoLang. After the Go tutorial [Games with Go](link), I wanted to learn to ceate a simple webapp. I found this excelent [blog of Soham Kamani](https://www.sohamkamani.com/blog/2017/09/13/how-to-build-a-web-application-in-golang/) where he creates a simple webapp in Go including a database and with proper unit tests. This got me exited and after following his tutorial, I decided to improve this fullstack webapp setup by dockerizing it. It turned out to be quite easy and I will show you how we can achieve this.
 
 For my daily work I'm used to work with the Jetbains IDE's. But since they do not have a community version for Go development I tried VS Code which has a nice Go plugin.
 
-### sql 
+#### sql 
 
 ```sql
 -- Create the database
 CREATE DATABASE bird_encyclopedia;
 -- Enter the database
 \c bird_encyclopedia
-
 ```
