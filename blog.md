@@ -53,6 +53,8 @@ CMD ["app"]
 
 The `go get -d` command downloads all dependencies of the webapp and `go install` installs the webapp. After installing the webapp it becomes available as an executable `app`, i.e. the `WORKDIR` directory.
 
+To build the webapp without a database, we need to comment out the database connection in the `main` function in the `main.go` file.
+
 We can now try to build the image and run it.
 
 ```bash
@@ -104,19 +106,22 @@ select species, description from birds;
 \d
 \d birds
 select * from birds;
+
+-- Exit db
+exit
 ```
 
-In other words, we can manage the database the way we need it. Except for one last thing. We want the database to initalize with the `birds` table during startup. We can achieve this by creating an `initdb.sql` file which creates this table and put this file in the `/docker-entrypoint-initdb.d` directory in the container. A clumsy but simple way to do this is to add all files of the current directory using \`pwd\`.
+In other words, we can manage the database the way we need it. Except for one last thing. We want the database to initalize with the `birds` table during startup. We can achieve this by creating an `initdb.sql` file which creates this table and put this file in the `/docker-entrypoint-initdb.d` directory in the container. 
 
 ```bash
-docker run --rm --name db -v `pwd`:/docker-entrypoint-initdb.d -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=bird_encyclopedia -d postgres
+docker run --rm --name db -v `pwd`/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=bird_encyclopedia -d postgres
 ```
 
 We can verify the result again with psql.
 
 ```bash
 # Connect using psql
-docker run -it --rm --link db:postgres postgres psql -h postgres -U postgres bird_encyclopedia
+docker run -it --rm --link db:postgres postgres psql -h postgres -U postgres -d bird_encyclopedia -c "select * from birds;"
 #> password: secret
 ```
 
@@ -153,7 +158,13 @@ docker-compose up
 You can verify if the database is initialized using psql and expect an empty `birds` table.
 
 ```bash
-docker exec -it webappfullstackgodocker_db_1 psql -d bird_encyclopedia -U postgres -c "select * from birds;"
+docker exec -it webappfullstackgodocker_db_1 psql -h postgres -U postgres -d bird_encyclopedia -c "select * from birds;"
+```
+
+Clean your system by removing the containers.
+
+```bash
+docker-compose rm --force
 ```
 
 ## Modify database connection in Go app
@@ -162,6 +173,12 @@ Now that we can start both containers together using Docker Compose. To only thi
 
 ```go
 connString := "host=db port=5432 user=postgres password=secret dbname=bird_encyclopedia sslmode=disable"
+```
+
+Update the `main.go` file and build the image again.
+
+```bash 
+docker build -t gowebapp .
 ```
 
 ## Ready to Go!
@@ -191,6 +208,7 @@ Now that everything is set up. We can start the stack again with `docker-compose
 
 - [x] Intro more to the point. It is about Docker, not Go.
 - [x] Fix all LINK, LINKS
+- [ ] Fix initdb.sql
 - [ ] Verify if all code is working with current blog commit
 - [x] Capital caracters for Docker and Postgres,
 - [x] search for Postgress (double ss), Dockerize

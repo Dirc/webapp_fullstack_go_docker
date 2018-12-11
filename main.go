@@ -31,7 +31,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	//connString := "host= port= user= password= dbname= sslmode=disable"
+	// Enable/disable the use of an external database by comment in/out the lines UNTIL HERE.
+
 	connString := "host=db user=postgres password=secret dbname=bird_encyclopedia sslmode=disable"
 	db, err := sql.Open("postgres", connString)
 	if err != nil {
@@ -41,8 +42,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	InitStore(&dbStore{db: db})
+
+	// UNTIL HERE
 
 	router := newRouter()
 	http.ListenAndServe(":8080", router)
