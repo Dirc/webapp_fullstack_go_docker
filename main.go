@@ -33,7 +33,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// Enable/disable the use of an external database by comment in/out the lines UNTIL HERE.
 
+	// Connect to: postgres container
 	connString := "host=db user=postgres password=secret dbname=bird_encyclopedia sslmode=disable"
+	// Connect to: local Postgres database
+	//connString := "dbname=localhost sslmode=disable"
 	db, err := sql.Open("postgres", connString)
 	if err != nil {
 		panic(err)

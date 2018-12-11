@@ -121,7 +121,7 @@ We can verify the result again with psql.
 
 ```bash
 # Connect using psql
-docker run -it --rm --link db:postgres postgres psql -h postgres -U postgres -d bird_encyclopedia -c "select * from birds;"
+docker run -it --rm --link db:db postgres psql -h db -U postgres -d bird_encyclopedia -c "select * from birds;"
 #> password: secret
 ```
 
@@ -129,7 +129,7 @@ docker run -it --rm --link db:postgres postgres psql -h postgres -U postgres -d 
 
 Now that we have both a standalone Go container and Postgres container running, we can tie them together with Docker Compose.
 
-We take our previous `docker run` commands and put them in a `docker-compose.yml` file. For the `web` service we add `build: .`, so when Docker can not find an image called `gowebapp` locally, it will build the Dockerfile. 
+We take our previous `docker run` commands and put them in a `docker-compose.yml` file. For the `web` service we add `build: .`, so when Docker can not find an image called `gowebapp` locally, it will build the Dockerfile. We also add `restart: always`, this is a clumsy but simple way to ensure the web container won't stops with a connection error while the database is still starting.
 
 ```yaml
 version: '3.1'
@@ -137,6 +137,7 @@ services:
   web:
     build: .
     image: gowebapp
+    restart: always
     ports:
       - 8080:8080
   db:
@@ -158,7 +159,7 @@ docker-compose up
 You can verify if the database is initialized using psql and expect an empty `birds` table.
 
 ```bash
-docker exec -it webappfullstackgodocker_db_1 psql -h postgres -U postgres -d bird_encyclopedia -c "select * from birds;"
+docker exec -it webappfullstackgodocker_db_1 psql -h db -U postgres -d bird_encyclopedia -c "select * from birds;"
 ```
 
 Clean your system by removing the containers.
@@ -177,7 +178,7 @@ connString := "host=db port=5432 user=postgres password=secret dbname=bird_encyc
 
 Update the `main.go` file and build the image again.
 
-```bash 
+```bash
 docker build -t gowebapp .
 ```
 
@@ -208,8 +209,8 @@ Now that everything is set up. We can start the stack again with `docker-compose
 
 - [x] Intro more to the point. It is about Docker, not Go.
 - [x] Fix all LINK, LINKS
-- [ ] Fix initdb.sql
-- [ ] Verify if all code is working with current blog commit
+- [x] Fix initdb.sql
+- [x] Verify if all code is working with current blog commit
 - [x] Capital caracters for Docker and Postgres,
 - [x] search for Postgress (double ss), Dockerize
 - [x] Spelling checker!
