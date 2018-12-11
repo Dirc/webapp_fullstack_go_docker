@@ -66,9 +66,9 @@ Verify the webapp by browse to one of the uri's.
 
 ## Get database running in a Postgres container
 
-For our Postgress database, we take again the [the official Postgres image](https://hub.docker.com/_/postgres/).
+For our Postgress database, we take the [the official Postgres image](https://hub.docker.com/_/postgres/).
 
-We can start a Postgres container and add a password and a default database.
+We can start a Postgres container and add a password and default database.
 
 ```bash
 # Start Postgres container
@@ -108,7 +108,7 @@ select species, description from birds;
 select * from birds;
 ```
 
-In other words, we can manage the database the way we need it, except for one last thing. We want the database to initalise with the needed table during startup. We can achieve this by creating an initdb.sql file which creates the table we need and put this file in `/docker-entrypoint-initdb.d` in the container. A simple way to do this is to add all files of the current directory using \`pwd\`.
+In other words, we can manage the database the way we need it. Except for one last thing. We want the database to initalise with the `birds` table during startup. We can achieve this by creating an initdb.sql file which creates this table and put this file in the `/docker-entrypoint-initdb.d` directory in the container. A clumsy but simple way to do this is to add all files of the current directory using \`pwd\`.
 
 ```bash
 docker run --rm --name db -v `pwd`:/docker-entrypoint-initdb.d -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=bird_encyclopedia -d postgres
@@ -126,7 +126,7 @@ docker run -it --rm --link db:postgres postgres psql -h postgres -U postgres bir
 
 Now that we have both a standalone Go container and Postgres container running, we can tie them together with Docker Compose.
 
-We take our previous `docker run` commands and put them in a `docker-compose.yml` file. For the `web` service we add `build: .`, so when Docker can not find an image called `gowebapp` locally, it will build the Dockerfile instead of searching the image on Docker Hub. For the `db` service do want Docker to search on Docker Hub, since we use the vanilla Postgres image.
+We take our previous `docker run` commands and put them in a `docker-compose.yml` file. For the `web` service we add `build: .`, so when Docker can not find an image called `gowebapp` locally, it will build the Dockerfile. 
 
 ```yaml
 version: '3.1'
@@ -152,30 +152,32 @@ We can now start both services.
 docker-compose up
 ```
 
-You can verify if the database is initialized using psql:
+You can verify if the database is initialized using psql and expect an empty `birds` table.
 
 ```bash
 docker exec -it webappfullstackgodocker_db_1 psql -d bird_encyclopedia -U postgres -c "select * from birds;"
 ```
 
-This should return an empty `birds` table.
-
 ## Modify database connection in Go app
 
-Now that we can start both containers together using Docker Compose. To only thing left is to tell the Go webapp where to find the database. For this we need to modify the database connection which is defined in `main.go` in the `main` function. The database connection is defiened by the keys `host= port= user= password= dbname= sslmode=`. Since we use Docker Compose the `host` is equal to the service name `db`. Hence we get:
+Now that we can start both containers together using Docker Compose. To only thing left is to tell the Go webapp where to find the database. For this we need to modify the database connection which is configured in the `main` function in the `main.go` file. The database connection is defiened by the keys `host= port= user= password= dbname= sslmode=`. Since we use Docker Compose, the host is equal to the service name `host=db`. Hence we get:
 
 ```go
 connString := "host=db port=5432 user=postgres password=secret dbname=bird_encyclopedia sslmode=disable"
 ```
 
-We can start the stack again and browse to `http://localhost:8080/assets/`, add some of your favorite birds and then verify the `birds` table in the database again.
+We can start the stack again and browse to `http://localhost:8080/assets/`, add some of your favorite birds in the gui and then verify the `birds` table in the database again with psql.
+
+## Done!
+
+We are done! 
 
 ## skeleton
 
 - Intro: Ready to learn some Go Lang
   - (After Games With Go)
   - Wanted to create a simple webapp and found this excelent blog.
-  - I got exited and decided to spice things up a bit by dockerise this webapp and database setup.
+  - I got exited and decided to spice things up a bit by dockerize this webapp and database setup.
   - Which was surprisingly easy!
 
 - Tool of choice: VS Code. Since it has a nice Go plugin.
@@ -192,10 +194,10 @@ We can start the stack again and browse to `http://localhost:8080/assets/`, add 
 - [x] Intro more to the point. It is about Docker, not Go.
 - [ ] Fix all LINK, LINKS
 - [ ] Verify if all code is working with current blog commit
-- [ ] Capital caracters for Docker and Postgres
+- [x] Capital caracters for Docker and Postgres,
+- [x] search for Postgress (double ss), Dockerize
 - [ ] Spelling checker!
 - [ ] update docker-compose.yml and verify if it still works!
-- [ ] add remark an VS Code IDE
 - [ ] Rewrite first paragraph/intro
 - [ ] Notify Soham Kamani of how he inspired me
 
