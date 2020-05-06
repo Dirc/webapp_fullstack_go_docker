@@ -5,7 +5,7 @@ services:
     image: gowebapp
     restart: always
     ports:
-      - 8080:8080
+      - ${APPPORT:-8080}:8080 # Make host port variable, default is 8080
   db:
     image: postgres
     environment:
@@ -14,4 +14,3 @@ services:
       POSTGRES_DB: bird_encyclopedia
     volumes:
       - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
-
